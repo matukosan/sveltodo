@@ -1,4 +1,4 @@
-import { db } from '$lib/db';
+import { db } from '$lib/server/db';
 
 export async function load() {
 	const rows = await db.query.domainTable.findMany();
