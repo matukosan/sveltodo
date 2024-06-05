@@ -1,7 +1,7 @@
-import { turso } from '$lib/turso.server';
+import { db } from '$lib/db';
 
 export async function load() {
-	const { rows } = await turso.execute('SELECT * FROM table_name');
+	const rows = await db.query.domainTable.findMany();
 	console.log('FOOOO', rows);
 
 	return { rows };
