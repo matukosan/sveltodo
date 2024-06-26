@@ -13,9 +13,15 @@ export async function load() {
 }
 
 export const actions = {
-	delete: async ({ request }: any) => {
+	delete: async ({ request }: {request: Request}) => {
 		const data = await request.formData();
 
-		await db.delete(todosTable).where(eq(todosTable.id, data.get('id')));
+		if (!data.get('id')) {
+			return;
+		}
+
+		const id = parseInt(<string>data.get('id'));
+
+		await db.delete(todosTable).where(eq(todosTable.id, id));
 	}
 };

@@ -17,11 +17,16 @@ export const actions = {
 	default: async ({ request }: any) => {
 		const data = await request.formData();
 
-		const insertData: InsertTodo = { title: data.get('title'), projectId: data.get('projectId') };
+		const insertData: InsertTodo = { title: data.get('title')};
+		if (data.get('projectId') && data.get('projectId') !== 'undefined') {
+			insertData.projectId = data.get('projectId');
+		}
+
 		const stored = await db.insert(todosTable).values(insertData).returning();
 
 		await db.delete(todoTagsTable).where(eq(todoTagsTable.todoId, stored[0].id));
 		for (const tId of data.get('tagsIds').split(',')) {
+			if (tId === '') return;
 			await db.insert(todoTagsTable).values({ todoId: stored[0].id, tagId: tId });
 		}
 
