@@ -1,3 +1,0 @@
-<h1>
-	ADMIN YEEAHH
-</h1>

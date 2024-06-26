@@ -5,6 +5,7 @@
 	import UserButton from 'clerk-sveltekit/client/UserButton.svelte';
 	import SignedIn from 'clerk-sveltekit/client/SignedIn.svelte';
 	import SignedOut from 'clerk-sveltekit/client/SignedOut.svelte';
+	import { Toaster } from 'svelte-french-toast';
 
 	// export const prerender = true;
 </script>
@@ -27,6 +28,8 @@
 	<footer>
 		<p>visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit</p>
 	</footer>
+
+	<Toaster position="bottom-right"/>
 </div>
 
 <style>

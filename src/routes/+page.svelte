@@ -1,64 +1,49 @@
 <script>
-	import Counter from './Counter.svelte';
-	import welcome from '$lib/images/svelte-welcome.webp';
-	import welcome_fallback from '$lib/images/svelte-welcome.png';
+	import DeletePrompt from './DeletePrompt.svelte';
+	import { buttonVariants } from '@/components/ui/button';
+	import * as Table from "$lib/components/ui/table";
+	import EditIcon from '@/components/icons/EditIcon.svelte';
 
-	// import { db } from "../drizzle";
-	//
-	// db.select().from(foo).all();
+	let { data } = $props();
 
 </script>
 
-<svelte:head>
-	<title>Home</title>
-	<meta name="description" content="Svelte demo app" />
-</svelte:head>
 
-<section>
-	<h1 class="text-3xl font-bold underline">
-		<span class="welcome">
-			<picture>
-				<source srcset={welcome} type="image/webp" />
-				<img src={welcome_fallback} alt="Welcome" />
-			</picture>
-		</span>
+<div class="flex flex-row justify-between mb-4">
+	<h1>Todos</h1>
+	<a href="/todos/new" class={buttonVariants({ variant: "default" })}>New Todo</a>
+</div>
 
-		to your new<br />SvelteKit app
-	</h1>
-
-	<h2>
-		try editing <strong>src/routes/+page.svelte</strong>
-	</h2>
-
-	<Counter />
-</section>
-
-<style>
-	section {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		flex: 0.6;
-	}
-
-	h1 {
-		width: 100%;
-	}
-
-	.welcome {
-		display: block;
-		position: relative;
-		width: 100%;
-		height: 0;
-		padding: 0 0 calc(100% * 495 / 2048) 0;
-	}
-
-	.welcome img {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		top: 0;
-		display: block;
-	}
-</style>
+<Table.Root>
+	<Table.Header>
+		<Table.Row>
+			<Table.Head class="w-[100px]">ID</Table.Head>
+			<Table.Head>Name</Table.Head>
+			<Table.Head>Project</Table.Head>
+			<Table.Head>Tags</Table.Head>
+			<Table.Head class="text-right"></Table.Head>
+		</Table.Row>
+	</Table.Header>
+	<Table.Body>
+		{#each data.todos as todo, i (i)}
+			<Table.Row class="hover:bg-slate-200 transition-all">
+				<Table.Cell class="font-medium">{todo.id}</Table.Cell>
+				<Table.Cell>{todo.title}</Table.Cell>
+				<Table.Cell>{todo.project?.title}</Table.Cell>
+				<Table.Cell>
+					<div class="flex flex-row gap-2">
+						{#each todo?.todoTags as todoTag}
+							<div class="p-1 px-3 bg bg-blue-300 rounded-3xl">{todoTag.tag.title}</div>
+						{/each}
+					</div>
+				</Table.Cell>
+				<Table.Cell class="text-right flex flex-row gap-2 justify-end items-center">
+					<a href="/todos/{todo.id}/edit" class={buttonVariants({ variant: "destructiveOutline" })}>
+						<EditIcon />
+					</a>
+					<DeletePrompt id={todo.id}></DeletePrompt>
+				</Table.Cell>
+			</Table.Row>
+		{/each}
+	</Table.Body>
+</Table.Root>
