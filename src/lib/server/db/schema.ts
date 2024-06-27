@@ -61,3 +61,7 @@ export const tagsToTodosRelations = relations(todoTagsTable, ({ one }) => ({
 		references: [tagsTable.id]
 	})
 }));
+export const insertTodoTagsSchema = createInsertSchema(todoTagsTable);
+export type InsertTodoTagsSchemaType = z.infer<typeof insertTodoTagsSchema>;
+export const selectTodoTagsSchema = createSelectSchema(todoTagsTable);
+export type SelectTodoTagsSchemaType = z.infer<typeof selectTodoTagsSchema>;

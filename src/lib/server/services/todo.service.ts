@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { db } from '@/server/db';
-import { insertTodoSchema, todosTable, todoTagsTable } from '@/server/db/schema';
+import { insertTodoSchema, insertTodoTagsSchema, todosTable, todoTagsTable } from '@/server/db/schema';
 import { eq } from 'drizzle-orm';
 
 export const todoEditSchema = z.object({
@@ -23,10 +23,10 @@ export const TodoService = {
 
 		if (Array.isArray(data.tagIds)){
 			for (const tId of data.tagIds) {
-				await db.insert(todoTagsTable).values({ todoId: data.id, tagId: tId });
+				await db.insert(todoTagsTable).values(insertTodoTagsSchema.parse({ todoId: data.id, tagId: tId }));
 			}
 		} else {
-			await db.insert(todoTagsTable).values({ todoId: data.id, tagId: data.tagIds });
+			await db.insert(todoTagsTable).values(insertTodoTagsSchema.parse({ todoId: data.id, tagId: data.tagIds }));
 		}
 
 		return stored[0];

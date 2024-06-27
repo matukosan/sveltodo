@@ -33,7 +33,5 @@ export function formBody(body: FormData) {
 
 export async function parseRequest<T>(event: RequestEvent, schema: z.ZodTypeAny): Promise<T | null> {
 	const formData = formBody(await event.request.formData());
-	const parseResult = schema.safeParse(formData);
-	if (!parseResult || !parseResult.data) return null;
-	return parseResult.data;
+	return schema.parse(formData);
 }
