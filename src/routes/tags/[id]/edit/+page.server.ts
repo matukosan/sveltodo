@@ -1,6 +1,9 @@
 import { db } from '$lib/server/db';
-import { projectsTable, tagsTable } from '$lib/server/db/schema';
+import { tagsTable } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
+import { z } from 'zod';
+import { formBody } from '@/form-helpers';
+import type { RequestEvent } from '@sveltejs/kit';
 
 export async function load({ params }: any) {
 	const tags = await db.select().from(tagsTable).where(eq(tagsTable.id, params.id));
@@ -10,14 +13,22 @@ export async function load({ params }: any) {
 	};
 }
 
+
+const tagsUpdateSchema = z.object({
+	id: z.number(),
+	title: z.string()
+});
 export const actions = {
-	default: async ({ request }: any) => {
-		const data = await request.formData();
+	default: async ({ request }: RequestEvent) => {
+		const formData = formBody(await request.formData());
+		const parseResult = tagsUpdateSchema.safeParse(formData);
+		if (!parseResult.data) return;
+		const data = parseResult.data;
 
 		const stored = await db
 			.update(tagsTable)
-			.set({ title: data.get('title') })
-			.where(eq(tagsTable.id, data.get('id')))
+			.set({ title: data.title })
+			.where(eq(tagsTable.id, data.id))
 			.returning();
 
 		return stored[0];

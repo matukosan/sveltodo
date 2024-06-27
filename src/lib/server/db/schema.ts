@@ -9,6 +9,7 @@ export const todosTable = pgTable('todos', {
 	projectId: integer('project_id').references(() => projectsTable.id)
 });
 export type InsertTodo = typeof todosTable.$inferInsert;
+
 export const todosRelations = relations(todosTable, ({ one, many }) => ({
 	project: one(projectsTable, {
 		fields: [todosTable.projectId],

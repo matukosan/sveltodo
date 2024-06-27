@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { enhance } from '$app/forms';
 	import toast from 'svelte-french-toast';
 	import { goto } from '$app/navigation';
@@ -9,16 +9,12 @@
 
 	let { data } = $props();
 
-	let currentTags = $state(data.todo?.todoTags.map((tt) => {
+	let currentTags: { id: number, title: string }[] = $state(data.todo?.todoTags.map((tt: {tag: Record<string, string>}) => {
 		return tt.tag;
 	}));
 
-	let currentTagsIds = $derived.by(() => {
-		return currentTags.map((ct) => ct.id);
-	})
-
 	let tagsList = $derived.by(() => {
-		return data.tags.filter((t) => {
+		return data.tags.filter((t: {id: number}) => {
 			return !currentTags?.find((ct) => {
 				return ct.id === t.id;
 			});
@@ -26,6 +22,14 @@
 	});
 
 	let selectedTag = $state({label: '', value: ''});
+
+	const selectTagHandler = (tagId: number) => {
+		return () => {
+			const tagToAdd = data.tags.find((t: {id: number}) => t.id === tagId);
+			currentTags.push(tagToAdd);
+			selectedTag = {label: '', value: ''};
+		}
+	}
 
 </script>
 
@@ -49,9 +53,9 @@
 	</div>
 
 	<div class="flex flex-row gap-4 items-center">
-		<label>
+		<span>
 			Project
-		</label>
+		</span>
 
 		<Select.Root portal={null} selected={{label: data.todo?.project?.title, value: data.todo?.project?.id}}>
 			<Select.Trigger class="w-[180px]">
@@ -73,19 +77,19 @@
 
 
 	<div>
-		<label>
+		<span>
 			Tags
-		</label>
+		</span>
 		<div class="flex flex-row gap-2 mt-2">
 			{#if currentTags && currentTags?.length > 0}
 				{#each currentTags as tag}
 					<div class="p-1 px-3 bg bg-blue-300 rounded-3xl flex flex-row gap-2 items-center">
 						{tag.title}
-						<span class="fill-gray-500 hover:fill-gray-800 cursor-pointer" onclick={() => {
+						<button class="fill-gray-500 hover:fill-gray-800 cursor-pointer" onclick={() => {
 							currentTags = currentTags.filter((ct) => {
 								return ct.id !== tag.id;
 							})
-						}}><XIcon /></span>
+						}}><XIcon /></button>
 					</div>
 				{/each}
 			{/if}
@@ -99,21 +103,18 @@
 					<Select.Group>
 						<Select.Label>Tags</Select.Label>
 						{#each tagsList as tag}
-							<Select.Item value={tag.id} label={tag.title} onclick={() => {
-								const tagToAdd = data.tags.find((t) => t.id === tag.id);
-								currentTags.push(tagToAdd);
-								selectedTag = {label: '', value: ''}; }
-							}>
+							<Select.Item value={tag.id} label={tag.title} onclick={selectTagHandler(tag.id)}>
 								{tag.title}
 							</Select.Item>
 						{/each}
 					</Select.Group>
 				</Select.Content>
-				<Select.Input name="tagId" />
 			</Select.Root>
 		</div>
 
-		<input type="hidden" name="tagsIds" value={currentTagsIds} />
+		{#each currentTags as ct}
+			<input type="hidden" name="tagIds" value={ct.id} />
+		{/each}
 	</div>
 
 
