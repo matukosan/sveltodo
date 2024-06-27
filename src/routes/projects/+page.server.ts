@@ -1,28 +1,20 @@
-import { db } from '$lib/server/db';
-import { projectsTable } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
 import type { RequestEvent } from '@sveltejs/kit';
-import { z } from 'zod';
-import { formBody } from '@/form-helpers';
+import { parseRequest } from '@/form-helpers';
+import { projectDeleteSchema, type ProjectDeleteSchemaType, ProjectsService } from '@/server/services/projects.service';
 
 export async function load() {
-	const projects = await db.query.projectsTable.findMany({ with: { todos: true } });
+	const projects = await ProjectsService.findAll();
+
 	return {
 		projects
 	};
 }
 
-const projectsDeleteSchema = z.object({
-	id: z.number(),
-});
-
 export const actions = {
-	delete: async ({ request }: RequestEvent) => {
-		const formData = formBody(await request.formData());
-		const parseResult = projectsDeleteSchema.safeParse(formData);
-		if (!parseResult.data) return;
-		const data = parseResult.data;
+	delete: async (event: RequestEvent) => {
+		const data = await parseRequest<ProjectDeleteSchemaType>(event, projectDeleteSchema);
+		if (!data) return;
 
-		await db.delete(projectsTable).where(eq(projectsTable.id, data.id));
+		await ProjectsService.delete(data.id);
 	}
 };

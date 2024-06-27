@@ -12,7 +12,7 @@
 
 <form method="POST" class="flex flex-col gap-4"
 			use:enhance={() => {
-				return ({ result }) => {
+				return () => {
 						toast.success("Project updated");
 						goto('/projects');
 				};
@@ -22,9 +22,9 @@
 		<label for="title">
 			Title
 		</label>
-		<Input autofocus id="title" name="title" type="text" placeholder="Name" value={data.todo.title}/>
+		<Input autofocus id="title" name="title" type="text" placeholder="Name" value={data.project?.title}/>
 
-		<input type="hidden" name="id" value={data.todo.id} />
+		<input type="hidden" name="id" value={data.project?.id} />
 	</div>
 	<div class="flex flex-row justify-between">
 		<Button type="submit">Save</Button>

@@ -3,6 +3,9 @@ import { relations } from 'drizzle-orm/relations';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
+
+/** ************************************************************** **/
+
 export const todosTable = pgTable('todos', {
 	id: serial('id').primaryKey(),
 	title: text('title').notNull(),
@@ -24,23 +27,51 @@ export const todosRelations = relations(todosTable, ({ one, many }) => ({
 	todoTags: many(todoTagsTable)
 }));
 
+
+
+
+/** ************************************************************** **/
+
+
+
+
+
 export const projectsTable = pgTable('projects', {
 	id: serial('id').primaryKey(),
 	title: text('title').notNull()
 });
 export type InsertProject = typeof projectsTable.$inferInsert;
+export const insertProjectSchema = createInsertSchema(projectsTable);
+export type InsertProjectSchemaType = z.infer<typeof insertProjectSchema>;
+export const selectProjectsSchema = createSelectSchema(projectsTable);
+export type SelectProjectSchemaType = z.infer<typeof selectProjectsSchema>;
 export const projectsRelations = relations(projectsTable, ({ many }) => ({
 	todos: many(todosTable)
 }));
+
+
+
+/** ************************************************************** **/
+
 
 export const tagsTable = pgTable('tags', {
 	id: serial('id').primaryKey(),
 	title: text('title').notNull()
 });
 export type InsertTag = typeof tagsTable.$inferInsert;
+export const insertTagSchema = createInsertSchema(tagsTable);
+export type InsertTagSchemaType = z.infer<typeof insertTagSchema>;
+export const selectTagsSchema = createSelectSchema(tagsTable);
+export type SelectTagSchemaType = z.infer<typeof selectTagsSchema>;
 export const tagsRelations = relations(tagsTable, ({ many }) => ({
 	todoTags: many(todoTagsTable)
 }));
+
+
+
+/** ************************************************************** **/
+
+
 
 export const todoTagsTable = pgTable('todoTags', {
 	id: serial('id').primaryKey(),
@@ -61,7 +92,13 @@ export const tagsToTodosRelations = relations(todoTagsTable, ({ one }) => ({
 		references: [tagsTable.id]
 	})
 }));
+
 export const insertTodoTagsSchema = createInsertSchema(todoTagsTable);
 export type InsertTodoTagsSchemaType = z.infer<typeof insertTodoTagsSchema>;
 export const selectTodoTagsSchema = createSelectSchema(todoTagsTable);
 export type SelectTodoTagsSchemaType = z.infer<typeof selectTodoTagsSchema>;
+
+
+
+/** ************************************************************** **/
+

@@ -1,25 +1,23 @@
-import { db } from '$lib/server/db';
-import { projectsTable } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
+import { projectEditSchema, type ProjectEditSchemaType, ProjectsService } from '@/server/services/projects.service';
+import type { RequestEvent } from '@sveltejs/kit';
+import { parseRequest } from '@/form-helpers';
+
+export async function load({ params }: {
+	params: {id: number}
+}) {
+	const project = await ProjectsService.findById(params.id);
+
+	return {
+		project
+	};
+}
 
 export const actions = {
-	default: async ({ request }: any) => {
-		const data = await request.formData();
+	default: async (event: RequestEvent) => {
+		const data = await parseRequest<ProjectEditSchemaType>(event, projectEditSchema);
+		if (!data) return;
 
-		const stored = await db
-			.update(projectsTable)
-			.set({ title: data.get('title') })
-			.where(eq(projectsTable.id, data.get('id')))
-			.returning();
-
-		return stored[0];
+		return ProjectsService.update(data);
 	}
 };
 
-export async function load({ params }: any) {
-	const projects = await db.select().from(projectsTable).where(eq(projectsTable.id, params.id));
-
-	return {
-		todo: projects[0]
-	};
-}

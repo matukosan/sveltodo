@@ -2,7 +2,6 @@
 	import DeletePrompt from './DeletePrompt.svelte';
 	import { buttonVariants } from '@/components/ui/button';
 	import * as Table from "$lib/components/ui/table";
-	import { goto } from '$app/navigation';
 	import EditIcon from '@/components/icons/EditIcon.svelte';
 
 	let { data } = $props();

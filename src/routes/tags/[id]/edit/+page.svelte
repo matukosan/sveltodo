@@ -22,9 +22,9 @@
 		<label for="title">
 			Title
 		</label>
-		<Input autofocus id="title" name="title" type="text" placeholder="Name" value={data.tag.title}/>
+		<Input autofocus id="title" name="title" type="text" placeholder="Name" value={data.tag?.title}/>
 
-		<input type="hidden" name="id" value={data.tag.id} />
+		<input type="hidden" name="id" value={data.tag?.id} />
 	</div>
 	<div class="flex flex-row justify-between">
 		<Button type="submit">Save</Button>

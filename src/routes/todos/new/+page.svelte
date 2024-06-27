@@ -106,7 +106,9 @@
 			</Select.Root>
 		</div>
 
-		<input type="hidden" name="tagsIds" value={currentTagsIds} />
+		{#each currentTags as ct}
+			<input type="hidden" name="tagIds" value={ct.id} />
+		{/each}
 	</div>
 
 	<div class="flex flex-row justify-between">

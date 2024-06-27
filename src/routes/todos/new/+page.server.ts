@@ -1,11 +1,17 @@
-import { db } from '$lib/server/db';
-import { type InsertTodo, todosTable, todoTagsTable } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
+import { parseRequest } from '@/form-helpers';
+import {
+	todoInsertSchema,
+	type TodoInsertSchemaType,
+	TodoService
+} from '@/server/services/todo.service';
+import type { RequestEvent } from '@sveltejs/kit';
+import { TagsService } from '@/server/services/tags.service';
+import { ProjectsService } from '@/server/services/projects.service';
 
 export async function load() {
-	const projects = await db.query.projectsTable.findMany();
+	const projects = await ProjectsService.findAll();
 
-	const tags = await db.query.tagsTable.findMany();
+	const tags = await TagsService.findAll();
 
 	return {
 		projects,
@@ -14,22 +20,10 @@ export async function load() {
 }
 
 export const actions = {
-	default: async ({ request }: any) => {
-		const data = await request.formData();
+	default: async (event: RequestEvent) => {
+		const data = await parseRequest<TodoInsertSchemaType>(event, todoInsertSchema);
+		if (!data) return;
 
-		const insertData: InsertTodo = { title: data.get('title')};
-		if (data.get('projectId') && data.get('projectId') !== 'undefined') {
-			insertData.projectId = data.get('projectId');
-		}
-
-		const stored = await db.insert(todosTable).values(insertData).returning();
-
-		await db.delete(todoTagsTable).where(eq(todoTagsTable.todoId, stored[0].id));
-		for (const tId of data.get('tagsIds').split(',')) {
-			if (tId === '') return;
-			await db.insert(todoTagsTable).values({ todoId: stored[0].id, tagId: tId });
-		}
-
-		return stored[0];
+		return TodoService.insert(data);
 	}
 };

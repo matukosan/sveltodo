@@ -1,18 +1,23 @@
-import { db } from '$lib/server/db';
-import { tagsTable } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
+import {
+	tagsDeleteSchema,
+	type TagsDeleteSchemaType,
+	TagsService
+} from '@/server/services/tags.service';
+import { parseRequest } from '@/form-helpers';
+import type { RequestEvent } from '@sveltejs/kit';
 
 export async function load() {
-	const tags = await db.query.tagsTable.findMany();
+	const tags = await TagsService.findAll();
 	return {
 		tags
 	};
 }
 
 export const actions = {
-	delete: async ({ request }: any) => {
-		const data = await request.formData();
+	delete: async (event: RequestEvent) => {
+		const data = await parseRequest<TagsDeleteSchemaType>(event, tagsDeleteSchema);
+		if (!data) return;
 
-		await db.delete(tagsTable).where(eq(tagsTable.id, data.get('id')));
+		await TagsService.delete(data.id);
 	}
 };
