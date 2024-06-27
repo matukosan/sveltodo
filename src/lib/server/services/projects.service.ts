@@ -33,7 +33,7 @@ export const ProjectsService = {
 	},
 
 	findAll: () => {
-		return db.query.projectsTable.findMany({orderBy: projectsTable.id});
+		return db.query.projectsTable.findMany({orderBy: projectsTable.id,  with: { todos: true }});
 	},
 
 	findById: async (id: number) => {
