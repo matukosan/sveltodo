@@ -1,14 +1,13 @@
 <script>
 	import { page } from '$app/stores';
-	import logo from '$lib/images/svelte-logo.svg';
 	import github from '$lib/images/github.svg';
+	import UserButton from 'clerk-sveltekit/client/UserButton.svelte';
+	import SignedIn from 'clerk-sveltekit/client/SignedIn.svelte';
+	import SignedOut from 'clerk-sveltekit/client/SignedOut.svelte';
 </script>
 
-<header>
+<header class="flex flex-row justify-between h-12 items-center p-4">
 	<div class="corner">
-		<a href="https://kit.svelte.dev">
-			<img src={logo} alt="SvelteKit" />
-		</a>
 	</div>
 
 	<nav>
@@ -31,19 +30,18 @@
 		</svg>
 	</nav>
 
-	<div class="corner">
-		<a href="https://github.com/sveltejs/kit">
-			<img src={github} alt="GitHub" />
-		</a>
+	<div>
+		<SignedIn>
+			<UserButton afterSignOutUrl="/" />
+		</SignedIn>
+		<SignedOut>
+			<a href="/signin">Sign in</a> <span>|</span> <a href="/signup">Sign up</a>
+			<!-- You could also use <SignInButton mode="modal" /> and <SignUpButton mode="modal" /> here -->
+		</SignedOut>
 	</div>
 </header>
 
 <style>
-	header {
-		display: flex;
-		justify-content: space-between;
-	}
-
 	.corner {
 		width: 3em;
 		height: 3em;
