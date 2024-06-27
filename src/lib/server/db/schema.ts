@@ -1,5 +1,7 @@
 import { pgTable, serial, text, integer } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm/relations';
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
+import { z } from 'zod';
 
 export const todosTable = pgTable('todos', {
 	id: serial('id').primaryKey(),
@@ -9,6 +11,10 @@ export const todosTable = pgTable('todos', {
 	projectId: integer('project_id').references(() => projectsTable.id)
 });
 export type InsertTodo = typeof todosTable.$inferInsert;
+export const insertTodoSchema = createInsertSchema(todosTable);
+export type InsertTodoSchemaType = z.infer<typeof insertTodoSchema>;
+export const selectTodosSchema = createSelectSchema(todosTable);
+export type SelectTodoSchemaType = z.infer<typeof selectTodosSchema>;
 
 export const todosRelations = relations(todosTable, ({ one, many }) => ({
 	project: one(projectsTable, {

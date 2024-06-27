@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { db } from '@/server/db';
-import { todosTable, todoTagsTable } from '@/server/db/schema';
+import { insertTodoSchema, todosTable, todoTagsTable } from '@/server/db/schema';
 import { eq } from 'drizzle-orm';
 
 export const todoEditSchema = z.object({
@@ -15,7 +15,7 @@ export const TodoService = {
 	update: async (data: TodoEditSchemaType) => {
 		const stored = await db
 			.update(todosTable)
-			.set({ title: data.title, projectId: data.projectId })
+			.set(insertTodoSchema.parse(data))
 			.where(eq(todosTable.id, data.id))
 			.returning();
 
@@ -31,6 +31,7 @@ export const TodoService = {
 
 		return stored[0];
 	},
+
 	findById: async (id: number) => {
 		const todo = await db.query.todosTable.findFirst({
 			where: eq(todosTable.id, id),
