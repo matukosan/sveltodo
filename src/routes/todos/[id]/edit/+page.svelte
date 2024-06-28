@@ -31,23 +31,34 @@
 		}
 	}
 
+	let inProgress = $state(false);
+	let errorMessage = $state('');
+
 </script>
 
 <h1>Edit Todo</h1>
 
 <form method="POST" class="flex flex-col gap-4"
 			use:enhance={() => {
-				return () => {
+				inProgress = true;
+				errorMessage = '';
+				return async ({result}) => {
+					inProgress = false;
+					if (result.type === 'error'){
+						errorMessage = 'Updating todo failed';
+					} else {
 						toast.success("Todo updated");
 						goto('/');
+					}
 				};
 			}}
 >
+	{inProgress ? 'IN PROGRESS' : 'NOT IN PROGRESS'}
 	<div class="flex flex-row gap-4 items-center">
 		<label for="title">
 			Title
 		</label>
-		<Input autofocus id="title" name="title" type="text" placeholder="Name" value={data.todo?.title}/>
+		<Input disabled={inProgress} autofocus id="title" name="title" type="text" placeholder="Name" value={data.todo?.title}/>
 
 		<input type="hidden" name="id" value={data.todo?.id} />
 	</div>
@@ -57,7 +68,7 @@
 			Project
 		</span>
 
-		<Select.Root portal={null} selected={{label: data.todo?.project?.title, value: data.todo?.project?.id}}>
+		<Select.Root disabled={inProgress} portal={null} selected={{label: data.todo?.project?.title, value: data.todo?.project?.id}}>
 			<Select.Trigger class="w-[180px]">
 				<Select.Value placeholder="Select a project" />
 			</Select.Trigger>
@@ -85,7 +96,7 @@
 				{#each currentTags as tag}
 					<div class="p-1 px-3 bg bg-blue-300 rounded-3xl flex flex-row gap-2 items-center">
 						{tag.title}
-						<button class="fill-gray-500 hover:fill-gray-800 cursor-pointer" onclick={() => {
+						<button disabled={inProgress} class="fill-gray-500 hover:fill-gray-800 cursor-pointer" onclick={() => {
 							currentTags = currentTags.filter((ct) => {
 								return ct.id !== tag.id;
 							})
@@ -95,7 +106,7 @@
 			{/if}
 		</div>
 		<div class="flex flex-row gap-2 mt-2">
-			<Select.Root portal={null} bind:selected={selectedTag}>
+			<Select.Root portal={null} bind:selected={selectedTag} disabled={inProgress}>
 				<Select.Trigger class="w-[180px]">
 					<Select.Value placeholder="Add a tag" />
 				</Select.Trigger>
@@ -119,7 +130,13 @@
 
 
 	<div class="flex flex-row justify-between">
-		<Button type="submit">Save</Button>
+		<Button type="submit" disabled={inProgress}>Save</Button>
 		<a href="/">Back</a>
 	</div>
+
+	{#if errorMessage}
+		<div class="text-red-600">
+			{errorMessage}
+		</div>
+	{/if}
 </form>
