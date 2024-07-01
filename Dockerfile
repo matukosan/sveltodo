@@ -8,7 +8,7 @@ COPY svelte.config.js .
 COPY vite.config.ts .
 
 # all folders needed for the build
-COPY src src/
+COPY . .
 
 RUN yarn install --frozen-lockfile
 
@@ -16,6 +16,6 @@ RUN npx svelte-kit sync
 
 RUN yarn build
 
-EXPOSE 8080
+EXPOSE 3000
 
 CMD ["node", "build"]
