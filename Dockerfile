@@ -1,10 +1,8 @@
 FROM node:lts-alpine
 
-RUN npm i -g pnpm@latest
-
 # all files needed for the build
 COPY package.json .
-COPY pnpm-lock.yaml .
+COPY package-lock.json .
 COPY tsconfig.json .
 COPY svelte.config.js .
 COPY vite.config.ts .
@@ -12,11 +10,11 @@ COPY vite.config.ts .
 # all folders needed for the build
 COPY src src/
 
-RUN pnpm install --frozen-lockfile
+RUN yarn install --frozen-lockfile
 
 RUN npx svelte-kit sync
 
-RUN pnpm build
+RUN yarn build
 
 EXPOSE 8080
 

@@ -2,6 +2,8 @@
 	import Header from './Header.svelte';
 	import './styles.css';
 	import { Toaster } from 'svelte-french-toast';
+
+	export const prerender = false;
 </script>
 
 <div class="app bg-gray-100 grid grid-cols-1">
