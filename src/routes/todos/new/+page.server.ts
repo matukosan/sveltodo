@@ -24,6 +24,6 @@ export const actions = {
 		const data = await parseRequest<TodoInsertSchemaType>(event, todoInsertSchema);
 		if (!data) return;
 
-		return TodoService.insert(data);
+		return TodoService.insert(data,{userId: event.locals.session.userId});
 	}
 };

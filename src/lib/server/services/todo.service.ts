@@ -1,7 +1,15 @@
 import { z } from 'zod';
 import { db } from '@/server/db';
-import { insertTodoSchema, insertTodoTagsSchema, todosTable, todoTagsTable } from '@/server/db/schema';
-import { eq } from 'drizzle-orm';
+import {
+	insertTodoSchema,
+	insertTodoTagsSchema,
+	ownersTable,
+	projectsTable, tagsTable,
+	todosTable,
+	todoTagsTable
+} from '@/server/db/schema';
+import { and, eq } from 'drizzle-orm';
+import { OwnerService } from '@/server/services/owner.service';
 
 export const todoInsertSchema = z.object({
 	title: z.string(),
@@ -34,10 +42,12 @@ async function saveTodoTags(tagIds: number[] | number, todoId: number) {
 }
 
 export const TodoService = {
-	insert: async (data: TodoInsertSchemaType) => {
+	insert: async (data: TodoInsertSchemaType, {userId}) => {
+		const owner = await OwnerService.findUserById(userId);
+
 		const stored = (await db
 			.insert(todosTable)
-			.values(insertTodoSchema.parse(data))
+			.values(insertTodoSchema.parse({...data, ownerId: owner?.id}))
 			.returning())[0];
 
 		if (data.tagIds) {
@@ -47,10 +57,12 @@ export const TodoService = {
 		return stored;
 	},
 
-	update: async (data: TodoEditSchemaType) => {
+	update: async (data: TodoEditSchemaType, {userId}) => {
+		const owner = await OwnerService.findUserById(userId);
+
 		const stored = (await db
 			.update(todosTable)
-			.set(insertTodoSchema.parse(data))
+			.set(insertTodoSchema.parse({...data, ownerId: owner?.id}))
 			.where(eq(todosTable.id, data.id))
 			.returning())[0];
 
@@ -63,8 +75,11 @@ export const TodoService = {
 		return stored;
 	},
 
-	findAll: async () => {
+	findAll: async ({userId}: {userId: string}) => {
+		const owner = await OwnerService.findUserById(userId);
+
 		return db.query.todosTable.findMany({
+			where: eq(todosTable.ownerId, owner?.id),
 			orderBy: todosTable.id,
 			with: {
 				project: true,

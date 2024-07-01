@@ -53,7 +53,6 @@
 				};
 			}}
 >
-	{inProgress ? 'IN PROGRESS' : 'NOT IN PROGRESS'}
 	<div class="flex flex-row gap-4 items-center">
 		<label for="title">
 			Title

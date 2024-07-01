@@ -23,7 +23,7 @@ export const actions = {
 		if (!data) return;
 
 		try {
-			return await TodoService.update(data);
+			return await TodoService.update(data,{userId: event.locals.session.userId});
 		} catch (e) {
 			return error(500);
 		}

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { db } from '@/server/db';
-import { insertOwnerDbSchema, ownersTable } from '@/server/db/schema';
+import { insertOwnerDbSchema, ownersTable, projectsTable } from '@/server/db/schema';
 import { eq } from 'drizzle-orm';
 
 export const insertOwnerActionSchema = z.object({
@@ -22,6 +22,18 @@ export const OwnerService = {
 			.insert(ownersTable)
 			.values(insertOwnerDbSchema.parse({ orgId: data.id }))
 			.returning())[0];
+	},
+
+	findUserById: async (id: string) => {
+		return db.query.ownersTable.findFirst({
+			where: eq(ownersTable.userId, id)
+		});
+	},
+
+	findOwnerById: async (id: string) => {
+		return db.query.ownersTable.findFirst({
+			where: eq(ownersTable.orgId, id)
+		});
 	},
 
 	deleteUser: async (id: string) => {
