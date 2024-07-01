@@ -3,12 +3,10 @@ import { db } from '@/server/db';
 import {
 	insertTodoSchema,
 	insertTodoTagsSchema,
-	ownersTable,
-	projectsTable, tagsTable,
 	todosTable,
 	todoTagsTable
 } from '@/server/db/schema';
-import { and, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { OwnerService } from '@/server/services/owner.service';
 
 export const todoInsertSchema = z.object({
