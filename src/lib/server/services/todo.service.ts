@@ -7,7 +7,6 @@ import {
 	todoTagsTable
 } from '@/server/db/schema';
 import { eq } from 'drizzle-orm';
-import { OwnerService } from '@/server/services/owner.service';
 
 export const todoInsertSchema = z.object({
 	title: z.string(),
@@ -41,11 +40,9 @@ async function saveTodoTags(tagIds: number[] | number, todoId: number) {
 
 export const TodoService = {
 	insert: async (data: TodoInsertSchemaType, {userId}) => {
-		const owner = await OwnerService.findUserById(userId);
-
 		const stored = (await db
 			.insert(todosTable)
-			.values(insertTodoSchema.parse({...data, ownerId: owner?.id}))
+			.values(insertTodoSchema.parse({...data, ownerId: userId}))
 			.returning())[0];
 
 		if (data.tagIds) {
@@ -56,11 +53,9 @@ export const TodoService = {
 	},
 
 	update: async (data: TodoEditSchemaType, {userId}) => {
-		const owner = await OwnerService.findUserById(userId);
-
 		const stored = (await db
 			.update(todosTable)
-			.set(insertTodoSchema.parse({...data, ownerId: owner?.id}))
+			.set(insertTodoSchema.parse({...data, ownerId: userId}))
 			.where(eq(todosTable.id, data.id))
 			.returning())[0];
 
@@ -73,11 +68,9 @@ export const TodoService = {
 		return stored;
 	},
 
-	findAll: async ({userId}: {userId: string}) => {
-		const owner = await OwnerService.findUserById(userId);
-
+	findAll: async ({userId}: {userId: number}) => {
 		return db.query.todosTable.findMany({
-			where: eq(todosTable.ownerId, owner?.id),
+			where: eq(todosTable.ownerId, userId),
 			orderBy: todosTable.id,
 			with: {
 				project: true,

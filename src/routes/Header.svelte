@@ -3,7 +3,7 @@
 	import UserButton from 'clerk-sveltekit/client/UserButton.svelte';
 	import SignedIn from 'clerk-sveltekit/client/SignedIn.svelte';
 	import SignedOut from 'clerk-sveltekit/client/SignedOut.svelte';
-	// import OrganizationSwitcher from 'clerk-sveltekit/client/OrganizationSwitcher.svelte';
+	import OrganizationSwitcher from 'clerk-sveltekit/client/OrganizationSwitcher.svelte';
 </script>
 
 <header class="flex flex-row justify-between h-12 items-center p-4">
@@ -32,7 +32,7 @@
 
 	<div class="flex flex-row gap-2">
 		<SignedIn>
-<!--			<OrganizationSwitcher />-->
+			<OrganizationSwitcher />
 			<UserButton afterSignOutUrl="/" />
 		</SignedIn>
 		<SignedOut>

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { db } from '@/server/db';
-import { insertOwnerDbSchema, ownersTable, projectsTable } from '@/server/db/schema';
+import { insertOwnerDbSchema, ownersTable } from '@/server/db/schema';
 import { eq } from 'drizzle-orm';
 
 export const insertOwnerActionSchema = z.object({

@@ -1,9 +1,9 @@
 import { parseRequest } from '@/form-helpers';
-import { type RequestEvent } from '@sveltejs/kit';
 import { todoEditSchema, type TodoEditSchemaType, TodoService } from '@/server/services/todo.service';
 import { ProjectsService } from '@/server/services/projects.service';
 import { TagsService } from '@/server/services/tags.service';
 import { error } from '@sveltejs/kit';
+import type { EnrichedRequestEvent } from '@/types';
 
 export async function load({ params }: { params: {id: number} }) {
 	const todo = await TodoService.findById(params.id);
@@ -18,12 +18,12 @@ export async function load({ params }: { params: {id: number} }) {
 }
 
 export const actions = {
-	default: async (event: RequestEvent) => {
+	default: async (event: EnrichedRequestEvent) => {
 		const data = await parseRequest<TodoEditSchemaType>(event, todoEditSchema);
 		if (!data) return;
 
 		try {
-			return await TodoService.update(data,{userId: event.locals.session.userId});
+			return await TodoService.update(data,{userId: event.locals?.currentUser?.id});
 		} catch (e) {
 			return error(500);
 		}

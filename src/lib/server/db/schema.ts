@@ -126,4 +126,7 @@ export const ownersTable = pgTable('owners', {
 export const insertOwnerDbSchema = createInsertSchema(ownersTable);
 export type InsertOwnerDbSchema = z.infer<typeof insertOwnerDbSchema>;
 
+export const selectOwnerSchema = createSelectSchema(ownersTable);
+export type SelectOwnerSchemaType = z.infer<typeof selectOwnerSchema>;
+
 
