@@ -5,10 +5,10 @@ import { TagsService } from '@/server/services/tags.service';
 import { error } from '@sveltejs/kit';
 import type { EnrichedRequestEvent } from '@/types';
 
-export async function load({ params }: { params: {id: number} }) {
-	const todo = await TodoService.findById(params.id);
-	const projects = await ProjectsService.findAll();
-	const tags = await TagsService.findAll();
+export async function load(event: EnrichedRequestEvent) {
+	const todo = await TodoService.findById(event.params.id);
+	const projects = await ProjectsService.findAll({userId: event.locals.currentUser.id});
+	const tags = await TagsService.findAll({userId: event.locals.currentUser.id});
 
 	return {
 		todo,

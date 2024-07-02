@@ -1,11 +1,9 @@
 import { projectEditSchema, type ProjectEditSchemaType, ProjectsService } from '@/server/services/projects.service';
-import type { RequestEvent } from '@sveltejs/kit';
 import { parseRequest } from '@/form-helpers';
+import type { EnrichedRequestEvent } from '@/types';
 
-export async function load({ params }: {
-	params: {id: number}
-}) {
-	const project = await ProjectsService.findById(params.id);
+export async function load(event: EnrichedRequestEvent) {
+	const project = await ProjectsService.findById(event.params.id, {userId: event.locals.currentUser.id});
 
 	return {
 		project
@@ -13,11 +11,11 @@ export async function load({ params }: {
 }
 
 export const actions = {
-	default: async (event: RequestEvent) => {
+	default: async (event: EnrichedRequestEvent) => {
 		const data = await parseRequest<ProjectEditSchemaType>(event, projectEditSchema);
 		if (!data) return;
 
-		return ProjectsService.update(data);
+		return ProjectsService.update(data, {userId: event.locals.currentUser.id});
 	}
 };
 

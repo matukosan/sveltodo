@@ -3,8 +3,8 @@ import type { SelectOwnerSchemaType } from '@/server/db/schema';
 
 export interface EnrichedRequestEvent extends RequestEvent {
 	locals: {
-		currentUser?: SelectOwnerSchemaType,
-		session?: {
+		currentUser: SelectOwnerSchemaType,
+		session: {
 			userId: string
 			claims: {
 				azp: string,

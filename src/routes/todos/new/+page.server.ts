@@ -4,14 +4,14 @@ import {
 	type TodoInsertSchemaType,
 	TodoService
 } from '@/server/services/todo.service';
-import type { RequestEvent } from '@sveltejs/kit';
 import { TagsService } from '@/server/services/tags.service';
 import { ProjectsService } from '@/server/services/projects.service';
+import type { EnrichedRequestEvent } from '@/types';
 
-export async function load() {
-	const projects = await ProjectsService.findAll();
+export async function load(event: EnrichedRequestEvent) {
+	const projects = await ProjectsService.findAll({userId: event.locals.currentUser.id});
 
-	const tags = await TagsService.findAll();
+	const tags = await TagsService.findAll({userId: event.locals.currentUser.id});
 
 	return {
 		projects,
@@ -20,7 +20,7 @@ export async function load() {
 }
 
 export const actions = {
-	default: async (event: RequestEvent) => {
+	default: async (event: EnrichedRequestEvent) => {
 		const data = await parseRequest<TodoInsertSchemaType>(event, todoInsertSchema);
 		if (!data) return;
 

@@ -4,20 +4,20 @@ import {
 	TagsService
 } from '@/server/services/tags.service';
 import { parseRequest } from '@/form-helpers';
-import type { RequestEvent } from '@sveltejs/kit';
+import type { EnrichedRequestEvent } from '@/types';
 
-export async function load() {
-	const tags = await TagsService.findAll();
+export async function load(event: EnrichedRequestEvent) {
+	const tags = await TagsService.findAll({userId: event.locals.currentUser.id});
 	return {
 		tags
 	};
 }
 
 export const actions = {
-	delete: async (event: RequestEvent) => {
+	delete: async (event: EnrichedRequestEvent) => {
 		const data = await parseRequest<TagsDeleteSchemaType>(event, tagsDeleteSchema);
 		if (!data) return;
 
-		await TagsService.delete(data.id);
+		await TagsService.delete(data.id, {userId: event.locals.currentUser.id});
 	}
 };

@@ -1,7 +1,7 @@
 import { db } from '@/server/db';
 import { insertProjectSchema, projectsTable } from '@/server/db/schema';
 import { z } from 'zod';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 
 export const projectInsertSchema = z.object({
 	title: z.string(),
@@ -20,29 +20,40 @@ export const projectDeleteSchema = z.object({
 export type ProjectDeleteSchemaType = z.infer<typeof projectDeleteSchema>;
 
 export const ProjectsService = {
-	insert: async (data: ProjectInsertSchemaType) => {
-		return (await db.insert(projectsTable).values(insertProjectSchema.parse(data)).returning())[0];
+	insert: async (data: ProjectInsertSchemaType, {userId}) => {
+		return (await db.insert(projectsTable).values(insertProjectSchema.parse({...data, ownerId: userId})).returning())[0];
 	},
 
-	update: async (data: ProjectEditSchemaType) => {
+	update: async (data: ProjectEditSchemaType, {userId}) => {
 		return (await db
 			.update(projectsTable)
-			.set(insertProjectSchema.parse(data))
+			.set(insertProjectSchema.parse({...data, ownerId: userId}))
 			.where(eq(projectsTable.id, data.id))
 			.returning())[0];
 	},
 
-	findAll: () => {
-		return db.query.projectsTable.findMany({orderBy: projectsTable.id,  with: { todos: true }});
-	},
-
-	findById: async (id: number) => {
-		return db.query.projectsTable.findFirst({
-			where: eq(projectsTable.id, id)
+	findAll: ({userId}) => {
+		return db.query.projectsTable.findMany({
+			where: eq(projectsTable.ownerId, userId),
+			orderBy: projectsTable.id,  with: { todos: true }
 		});
 	},
 
-	delete: async (id: number) => {
-		return db.delete(projectsTable).where(eq(projectsTable.id, id));
+	findById: async (id: number, {userId}) => {
+		return db.query.projectsTable.findFirst({
+			where: and(
+				eq(projectsTable.ownerId, userId),
+				eq(projectsTable.id, id)
+			)
+		});
+	},
+
+	delete: async (id: number, {userId}) => {
+		return db.delete(projectsTable).where(
+			and(
+				eq(projectsTable.ownerId, userId),
+				eq(projectsTable.id, id)
+			)
+		);
 	}
 };

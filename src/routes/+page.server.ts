@@ -5,8 +5,9 @@ import {
 } from '@/server/services/todo.service';
 import { parseRequest } from '@/form-helpers';
 import type { RequestEvent } from '@sveltejs/kit';
+import type { EnrichedRequestEvent } from '@/types';
 
-export async function load(event) {
+export async function load(event: EnrichedRequestEvent) {
 	if (!event.locals.currentUser) {
 		return {todos: []};
 	}

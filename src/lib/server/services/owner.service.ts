@@ -30,7 +30,7 @@ export const OwnerService = {
 		});
 	},
 
-	findOwnerById: async (id: string) => {
+	findOrgById: async (id: string) => {
 		return db.query.ownersTable.findFirst({
 			where: eq(ownersTable.orgId, id)
 		});
