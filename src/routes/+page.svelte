@@ -3,6 +3,7 @@
 	import { buttonVariants } from '@/components/ui/button';
 	import {Root, Header, Row, Head, Body, Cell} from "$lib/components/ui/table";
 	import EditIcon from '@/components/icons/EditIcon.svelte';
+	import TodosBoard2 from './todos/TodosBoard2.svelte';
 
 	let { data } = $props();
 
@@ -12,6 +13,8 @@
 	<h1>Todos</h1>
 	<a href="/todos/new" class={buttonVariants({ variant: "default" })}>New Todo</a>
 </div>
+
+<TodosBoard2 todos={data.todos} />
 
 <Root>
 	<Header>
