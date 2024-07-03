@@ -57,6 +57,7 @@
 		"drizzle-orm": "^0.31.2",
 		"drizzle-zod": "^0.5.1",
 		"lucide-svelte": "^0.396.0",
+		"mermaid": "^10.9.1",
 		"postgres": "^3.4.4",
 		"svelte-french-toast": "^1.2.0",
 		"tailwind-merge": "^2.3.0",
