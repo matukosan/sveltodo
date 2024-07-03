@@ -32,12 +32,18 @@
 		draggingCard.status = status.name;
 	}
 
+	function dragEnd() {
+		if (!draggingCard) return;
+		console.log('CHANGE STATUS FOR', draggingCard);
+		draggingCard = undefined;
+	}
+
 </script>
 
 <div class="grid grid-cols-3 gap-2 w-full">
 	{#each statuses as status}
 		<div class="bg-slate-200 p-4"
-				 on:dragend={() => draggingCard = undefined}
+				 on:dragend={dragEnd}
 				 on:dragenter={() => swapStatus(status)}
 		>
 			<div class="mb-4">{status.name}</div>
@@ -53,7 +59,7 @@
 							animate:flip={{ duration: dragDuration }}
 							draggable="true"
 							on:dragstart={() => draggingCard = card}
-							on:dragend={() => draggingCard = undefined}
+							on:dragend={dragEnd}
 							on:dragenter={() => swapWith(card, status)}
 							on:dragover|preventDefault
 						>{card.title}</div>
