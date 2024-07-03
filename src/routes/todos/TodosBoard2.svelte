@@ -3,61 +3,22 @@
 
 	const statuses = [{name: 'open'}, {name: 'in progress'}, {name: 'done'}];
 
-	// let { todos } = $props();
-	// const cards = $derived.by(() => {
-	// 	const innerCards =  todos?.map((t) => {
-	// 		t.name = t.title;
-	// 		t.status = 'open';
-	//
-	// 	});
-	// 	console.log(innerCards);
-	// 	return innerCards;
-	//
-	// });
+	let { todos } = $props();
 
-	const cards = [
-		{
-			name: '1',
-			status: 'open'
-		},
-		{
-			name: '2',
-			status: 'open'
-		},
-		{
-			name: '3',
-			status: 'in progress'
-		},
-		{
-			name: '4',
-			status: 'in progress'
-		},
-		{
-			name: '5',
-			status: 'in progress'
-		},
-		{
-			name: '6',
-			status: 'in progress'
-		},
-		{
-			name: '7',
-			status: 'done'
-		},
-	]
+	const cards = $state([]);
 
+	todos.map((t) => {
+		t.status = 'open';
+		cards.push(t);
+	});
 
 	const dragDuration = 300;
 
-	let draggingCard;
+	let draggingCard = $state();
 	let animatingCards = new Set();
 
 	function swapWith(card, status) {
 		draggingCard.status = status.name;
-		// console.log(draggingCard.status, status.name);
-		// if (card.status !== status.name) {
-		// 	console.log('CHANGE STATUS');
-		// }
 		if (draggingCard === card || animatingCards.has(card)) return;
 		animatingCards.add(card);
 		setTimeout(() => animatingCards.delete(card), dragDuration);
@@ -66,25 +27,36 @@
 		cards[cardAIndex] = card;
 		cards[cardBIndex] = draggingCard;
 	}
+
+	function swapStatus(status) {
+		draggingCard.status = status.name;
+	}
+
 </script>
 
-<div class="grid grid-cols-3 gap-2 w-full h-96">
+<div class="grid grid-cols-3 gap-2 w-full">
 	{#each statuses as status}
-		<div class="bg-slate-200 p-4">
+		<div class="bg-slate-200 p-4"
+				 on:dragend={() => draggingCard = undefined}
+				 on:dragenter={() => swapStatus(status)}
+		>
 			<div class="mb-4">{status.name}</div>
-			<div class="flex flex-col gap-2">
+			<div
+				class="flex flex-col gap-2 h-[500px] p-2"
+				class:dragactive={!!draggingCard}
+			>
 				{#if cards.length > 0}
 					{#each cards.filter((c) => c.status === status.name) as card (card)}
 						<div
 							class="bg-white p-4"
+							class:dragging={draggingCard == card}
 							animate:flip={{ duration: dragDuration }}
-							class:myplaceholder={draggingCard === card}
 							draggable="true"
 							on:dragstart={() => draggingCard = card}
 							on:dragend={() => draggingCard = undefined}
 							on:dragenter={() => swapWith(card, status)}
 							on:dragover|preventDefault
-						>{card.name}</div>
+						>{card.title}</div>
 					{/each}
 				{/if}
 			</div>
@@ -114,5 +86,13 @@
 		.myplaceholder {
 				background-color: rgba(173, 216, 230, 0.2) !important;
 				border: 1px dashed #989898;
+		}
+
+		.dragactive {
+        outline: 1px dashed #989898;
+		}
+
+		.dragging {
+				background-color: rgba(173, 216, 230, 0.16);
 		}
 </style>
